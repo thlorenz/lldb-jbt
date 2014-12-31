@@ -1,36 +1,47 @@
 #!/usr/bin/python
 import lldb
-from sbvalue import value
-from sbvalue import variable
+
+DEBUG            = True
+kHeaderSize      = 0
+
+LAZY_COMPILE     = 'LazyCompile:'
+LAZY_COMPILE_LEN = len(LAZY_COMPILE)
 
 def jit_break (frame, bp_loc, dic):
-    try: 
-        # Getting parse errors at times
-        # todo: better to check for NULL or something?
 
-        # todo:
-        #       get to code->instruction_start() without evaluating expression (which is slow)
-        inst_start_var = frame.EvaluateExpression('reinterpret_cast<uint64_t>(code->instruction_start())');
-        inst_start = int(value(inst_start_var).value, 10)
+    # kHeaderSize is a constant and evaluating expressions is expensive, so we only do it once
+    global kHeaderSize
+    if kHeaderSize == 0:
+        kHeaderSize_var = frame.EvaluateExpression('((Code*)0x0)->instruction_start()')
+        kHeaderSize = kHeaderSize_var.GetValueAsUnsigned()
+        if DEBUG: print 'Determined kHeaderSize: %d' % kHeaderSize
 
-        code_var   = frame.FindVariable('code')
-        name_var   = frame.FindVariable('name')
-        length_var = frame.FindVariable('length')
 
-        length      = int(value(length_var).value, 10)
-        name        = value(name_var).summary.strip('"')
-        code        = value(code_var)
-        
-        print 'start: (%d :: %x) code: %s' % (inst_start, inst_start, code_var)
+    code_var   = frame.FindVariable('code')
+    name_var   = frame.FindVariable('name')
+    length_var = frame.FindVariable('length')
 
-        #inst_size  = int(value(inst_size_var).value, 10)
-    except:
-        print "parse error"
-        return True
+    length      = length_var.GetValueAsUnsigned()
+    name        = "%.*s" % (length, name_var.GetSummary().strip('"'))
+    code        = code_var.GetValueAsUnsigned()
+    inst_start  = code + kHeaderSize
+    
+    if name.startswith(LAZY_COMPILE):
+        name = name[LAZY_COMPILE_LEN:]
 
-    return True
+    # this prints exactly what PerfBasicLogger::LogRecordedBuffer prints omitting the instruction_size since we don't need it
+    if DEBUG: print '%x %s' % (inst_start, name)
+
+    return False
 
 def __lldb_init_module(debugger, internal_dict):
     debugger.HandleCommand('breakpoint set -name v8::internal::PerfBasicLogger::LogRecordedBuffer')
     debugger.HandleCommand('breakpoint command add -F jit.jit_break')
     print 'The jit resolver has been initialized and is ready for use.'
+
+
+### Trouble Shooting
+
+## slow method of determining instruction_start() -- uncomment to check against calculated one
+# inst_start_var = frame.EvaluateExpression('reinterpret_cast<uint64_t>(code->instruction_start())');
+# inst_start_old = int(value(inst_start_var).value, 10)
