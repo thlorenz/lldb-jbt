@@ -24,22 +24,26 @@ class Addresses:
     def __getitem__(self, key):
         return self._addresses[key]
 
+    def getKey(self, addr):
+        return addr.decimalAddress
+
     def push(self, val):
         self._addresses.append(val)
         self._sorted = False
 
-    def sort(self, val):
+    def sort_addresses(self):
         if self._sorted: return
-        print "sorting"
+        self._addresses = sorted(self._addresses, key=self.getKey)
         self._sorted = True
 
     def resolve(self, addr):
-        # TODO: sort
+        self.sort_addresses()
+        prev = unresolvedAddress
         for a in self._addresses:
-            if addr < a.decimalAddress: return a
+            if addr < a.decimalAddress: return prev
+            prev = a
 
         return unresolvedAddress
-
 
 addresses = Addresses()
 
@@ -48,6 +52,10 @@ def jit_break (frame, bp_loc, dic):
     # kHeaderSize is a constant and evaluating expressions is expensive, so we only do it once
     global kHeaderSize
     if kHeaderSize == 0:
+        # TODO  If not in debug mode instruction_start symbol is not found
+        #       error:  call to a function 'v8::internal::Code::instruction_start()' ('_ZN2v88internal4Code17instruction_startEv') 
+        #               that is not present in the target 
+        #       In that case just go with `5f == 95` I guess
         kHeaderSize_var = frame.EvaluateExpression('((Code*)0x0)->instruction_start()')
         kHeaderSize = kHeaderSize_var.GetValueAsUnsigned()
         if DEBUG: print 'Determined kHeaderSize: %d' % kHeaderSize
@@ -89,7 +97,7 @@ def jit_bt (debugger, command, result, internal_dict):
         else:
             addr = f.GetPC()
             resolved = addresses.resolve(addr)
-            print '  %s %s %s' % (star, f, resolved.name)
+            print ' %s %s %s' % (star, f, resolved.name)
 
 def __lldb_init_module(debugger, internal_dict):
     debugger.HandleCommand('breakpoint set -name v8::internal::PerfBasicLogger::LogRecordedBuffer')
