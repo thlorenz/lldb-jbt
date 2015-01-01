@@ -1,0 +1,4 @@
+target create "node_g"
+settings set -- target.run-args  "--perf-basic-prof" "--nouse-inlining" "index.js"
+command script import "../../jit.py"
+breakpoint set -name uv_fs_read -condition cb==NULL -ignore 1
