@@ -61,9 +61,9 @@ def jit_break (frame, bp_loc, dic):
         # In that case just go with `5f == 95`, this hopefully is close enough on any architecture
         if kHeaderSize == 0: 
             kHeaderSize = 95 
-            print 'Could not determine kHeaderSize since node is not running in debug mode, using approximate.'
+            print 'Warning, could not determine kHeaderSize since node is not running in debug mode. Using approximate instead.'
             if DEBUG: print 'Guessed kHeaderSize: %d' % kHeaderSize
-            print 'Run node_g instead if you want to run in debug mode'
+            print 'Run node_g if you want to run in debug mode'
         else:
             if DEBUG: print 'Determined kHeaderSize: %d' % kHeaderSize
 
@@ -111,7 +111,7 @@ def __lldb_init_module(debugger, internal_dict):
     debugger.HandleCommand('breakpoint set -name v8::internal::PerfBasicLogger::LogRecordedBuffer')
     debugger.HandleCommand('breakpoint command add -F jit.jit_break')
     debugger.HandleCommand('command script add -f jit.jit_bt jbt')
-    print 'The jit resolver has been initialized and is ready for use.'
+    print 'The jit symbol resolver command `jbt` has been initialized and is ready for use.'
 
 
 ### Trouble Shooting

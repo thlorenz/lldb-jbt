@@ -1,4 +1,4 @@
-# lldb-symbolicate
+# lldb-jbt
 
 ![assets/sample.png](assets/sample.png)
 

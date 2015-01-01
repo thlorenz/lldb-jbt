@@ -1,0 +1,33 @@
+{
+  "name": "lldb-jbt",
+  "version": "0.0.0",
+  "description": "Adds JavaScript symbols to lldb stack traces",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "Please run below test commands manually",
+    "test-read-sync": "./test/read-sync/run.sh",
+    "test-read-sync_g": "./test/read-sync_g/run.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thlorenz/lldb-jbt.git"
+  },
+  "keywords": [
+    "lldb",
+    "jit",
+    "backtrace",
+    "stacktrace",
+    "symbol",
+    "symbols",
+    "symbolicate"
+  ],
+  "author": "Thorsten Lorenz <thlorenz@gmx.de> (thlorenz.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thlorenz/lldb-jbt/issues"
+  },
+  "homepage": "https://github.com/thlorenz/lldb-jbt"
+}

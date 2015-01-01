@@ -1,3 +1,0 @@
-target create "/Users/thlorenz/dev/js/node/node_g"
-settings set -- target.run-args  "--perf-basic-prof" "/Users/thlorenz/dev/js/node/benchmark/http_simple.js"
-command script import "./jit.py"
