@@ -52,13 +52,21 @@ def jit_break (frame, bp_loc, dic):
     # kHeaderSize is a constant and evaluating expressions is expensive, so we only do it once
     global kHeaderSize
     if kHeaderSize == 0:
-        # TODO  If not in debug mode instruction_start symbol is not found
-        #       error:  call to a function 'v8::internal::Code::instruction_start()' ('_ZN2v88internal4Code17instruction_startEv') 
-        #               that is not present in the target 
-        #       In that case just go with `5f == 95` I guess
         kHeaderSize_var = frame.EvaluateExpression('((Code*)0x0)->instruction_start()')
         kHeaderSize = kHeaderSize_var.GetValueAsUnsigned()
-        if DEBUG: print 'Determined kHeaderSize: %d' % kHeaderSize
+        
+        # If not in debug mode instruction_start symbol is not found
+        # error:  call to a function 'v8::internal::Code::instruction_start()' ('_ZN2v88internal4Code17instruction_startEv') 
+        #         that is not present in the target 
+        # In that case just go with `5f == 95`, this hopefully is close enough on any architecture
+        if kHeaderSize == 0: 
+            kHeaderSize = 95 
+            print 'Could not determine kHeaderSize since node is not running in debug mode, using approximate.'
+            if DEBUG: print 'Guessed kHeaderSize: %d' % kHeaderSize
+            print 'Run node_g instead if you want to run in debug mode'
+        else:
+            if DEBUG: print 'Determined kHeaderSize: %d' % kHeaderSize
+
 
 
     code_var   = frame.FindVariable('code')
