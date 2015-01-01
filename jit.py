@@ -79,14 +79,15 @@ def jit_bt (debugger, command, result, internal_dict):
     frame = thread.GetSelectedFrame()
     frames = thread.get_thread_frames()
 
+    print '* thread: #%d: tid = 0x%x, %s' % (thread.GetIndexID(), thread.GetThreadID(), frame)
     for f in frames:
         name = '%s' % f.GetFunctionName()
         if name != 'None': 
-            print f
+            print '    %s' % f
         else:
             addr = f.GetPC()
             resolved = addresses.resolve(addr)
-            print '%s %s' % (f, resolved.name)
+            print '    %s %s' % (f, resolved.name)
 
 def __lldb_init_module(debugger, internal_dict):
     debugger.HandleCommand('breakpoint set -name v8::internal::PerfBasicLogger::LogRecordedBuffer')
