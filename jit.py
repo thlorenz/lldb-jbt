@@ -1,11 +1,47 @@
 #!/usr/bin/python
 import lldb
 
-DEBUG            = True
+DEBUG            = False
 kHeaderSize      = 0
 
 LAZY_COMPILE     = 'LazyCompile:'
 LAZY_COMPILE_LEN = len(LAZY_COMPILE)
+
+
+class Address:
+    def __init__(self, inst_start, name):
+        self.decimalAddress     = inst_start
+        self.hexadecimalAddress = "0x%x" % inst_start
+        self.name               = name
+
+unresolvedAddress = Address(0, '')
+
+class Addresses:
+    def __init__(self):
+        self._addresses = []
+        self._sorted = True
+    
+    def __getitem__(self, key):
+        return self._addresses[key]
+
+    def push(self, val):
+        self._addresses.append(val)
+        self._sorted = False
+
+    def sort(self, val):
+        if self._sorted: return
+        print "sorting"
+        self._sorted = True
+
+    def resolve(self, addr):
+        # TODO: sort
+        for a in self._addresses:
+            if addr < a.decimalAddress: return a
+
+        return unresolvedAddress
+
+
+addresses = Addresses()
 
 def jit_break (frame, bp_loc, dic):
 
@@ -32,11 +68,30 @@ def jit_break (frame, bp_loc, dic):
     # this prints exactly what PerfBasicLogger::LogRecordedBuffer prints omitting the instruction_size since we don't need it
     if DEBUG: print '%x %s' % (inst_start, name)
 
+    addresses.push(Address(inst_start, name))
+
     return False
+
+def jit_bt (debugger, command, result, internal_dict):
+    target = debugger.GetSelectedTarget()
+    process = target.GetProcess()
+    thread = process.GetSelectedThread()
+    frame = thread.GetSelectedFrame()
+    frames = thread.get_thread_frames()
+
+    for f in frames:
+        name = '%s' % f.GetFunctionName()
+        if name != 'None': 
+            print f
+        else:
+            addr = f.GetPC()
+            resolved = addresses.resolve(addr)
+            print '%s %s' % (f, resolved.name)
 
 def __lldb_init_module(debugger, internal_dict):
     debugger.HandleCommand('breakpoint set -name v8::internal::PerfBasicLogger::LogRecordedBuffer')
     debugger.HandleCommand('breakpoint command add -F jit.jit_break')
+    debugger.HandleCommand('command script add -f jit.jit_bt jbt')
     print 'The jit resolver has been initialized and is ready for use.'
 
 
