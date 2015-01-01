@@ -108,9 +108,16 @@ def jit_bt (debugger, command, result, internal_dict):
             print ' %s %s %s' % (star, f, resolved.name)
 
 def __lldb_init_module(debugger, internal_dict):
+    target = debugger.GetSelectedTarget()
+    target_s = '%s' % target
+    if target_s == 'No value':
+        print 'Please set at target first and then import the `jbt` command again.'
+        return
+
     debugger.HandleCommand('breakpoint set -name v8::internal::PerfBasicLogger::LogRecordedBuffer')
-    debugger.HandleCommand('breakpoint command add -F jit.jit_break')
-    debugger.HandleCommand('command script add -f jit.jit_bt jbt')
+    debugger.HandleCommand('breakpoint command add -F jbt.jit_break')
+    debugger.HandleCommand('command script add -f jbt.jit_bt jbt')
+
     print 'The jit symbol resolver command `jbt` has been initialized and is ready for use.'
 
 
