@@ -7,6 +7,7 @@ kHeaderSize      = 0
 LAZY_COMPILE     = 'LazyCompile:'
 LAZY_COMPILE_LEN = len(LAZY_COMPILE)
 
+from threading import Timer
 
 class Address:
     def __init__(self, inst_start, name):
@@ -107,17 +108,36 @@ def jit_bt (debugger, command, result, internal_dict):
             resolved = addresses.resolve(addr)
             print ' %s %s %s' % (star, f, resolved.name)
 
+def run_commands(command_interpreter, commands):
+    return_obj = lldb.SBCommandReturnObject()
+    for command in commands:
+        command_interpreter.HandleCommand( command, return_obj )
+        if return_obj.Succeeded():
+            if DEBUG: print return_obj.GetOutput()
+        else:
+            if DEBUG: print return_obj
+            return False
+    return True
+
 def __lldb_init_module(debugger, internal_dict):
-    target = debugger.GetSelectedTarget()
-    target_s = '%s' % target
-    if target_s == 'No value':
-        print 'Please set at target first and then import the `jbt` command again.'
-        return
+    ci = debugger.GetCommandInterpreter()
 
-    debugger.HandleCommand('breakpoint set -name v8::internal::PerfBasicLogger::LogRecordedBuffer')
-    debugger.HandleCommand('breakpoint command add -F jbt.jit_break')
+    def initBreakPoint():
+        success = run_commands(ci, [ 
+            'breakpoint set -name v8::internal::PerfBasicLogger::LogRecordedBuffer', 
+            'breakpoint command add -F jbt.jit_break' 
+        ])
+        # Keep trying to set the breakpoint until it succeeds which means we finally have a target set by the user.
+        # This is especially important for tools like Xcode which set the target automatically.
+        # We need to make sure we don't miss too much generated code after the target starts running, but also don't want to slow things down too much
+        # 200ms seems like a good compromise
+        if not success:
+            t = Timer(0.2, initBreakPoint)
+            t.start()
+
+    initBreakPoint()
+
     debugger.HandleCommand('command script add -f jbt.jit_bt jbt')
-
     print 'The jit symbol resolver command `jbt` has been initialized and is ready for use.'
 
 

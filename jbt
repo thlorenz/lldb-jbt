@@ -14,5 +14,5 @@ else
   echo
   echo "Alternatively do one of the following:"
   echo "  a)  Add '$DIR' to your PYTHONPATH"
-  echo "  b)  Run 'command script import $DIR/jbt.py' inside lldb."
+  echo "  b)  Run 'command script import $DIR/jbt.py' inside lldb or an '~/.lldbinit' script."
 fi
