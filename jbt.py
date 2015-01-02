@@ -40,9 +40,16 @@ class Addresses:
     def resolve(self, addr):
         self.sort_addresses()
         prev = unresolvedAddress
+        # TODO: handle addresses smaller than first we have a symbol for and bail out immediately
+
+        # TODO: warn when list is empty to remind of --perf-basic-prof flag
+
         for a in self._addresses:
             if addr < a.decimalAddress: return prev
             prev = a
+        
+        # fell off the end of the list so we might be inside the last symbol
+        if addr < prev.decimalAddress + 4096: return prev
 
         return unresolvedAddress
 
