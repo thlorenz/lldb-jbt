@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  PYTHONPATH=$DIR:$PYTHONPATH
+  export PYTHONPATH
+  echo "Now debug your node process with lldb and ensure to use the '--perf-basic-prof' flag."
+  echo "In lldb run 'command script import jbt' to initialize the command"
+else
+  echo "This script needs to be sourced."
+  echo "Therefore run 'source jbt' instead"
+fi
