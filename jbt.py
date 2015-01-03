@@ -42,9 +42,11 @@ class Addresses:
 
     def resolve(self, addr):
         self.sort_addresses()
-        prev = unresolvedAddress
-        # TODO: handle addresses smaller than first we have a symbol for and bail out immediately
 
+        # if address is smaller than the we first one we have a symbol for bail out immediately
+        if self.len() == 0 or addr < self._addresses[0].decimalAddress: return unresolvedAddress
+
+        prev = unresolvedAddress
         for a in self._addresses:
             if addr < a.decimalAddress: return prev
             prev = a
