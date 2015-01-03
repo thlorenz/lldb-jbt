@@ -29,10 +29,6 @@ command script import <path/to/jbt.py>
 
 Now the **jbt** command will initialize itself and is accessible to you in the **lldb** console inside Xcode.
 
-## Status
-
-**MAD SCIENCE!!**
-
 ## License
 
 MIT
