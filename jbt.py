@@ -37,12 +37,13 @@ class Addresses:
         self._addresses = sorted(self._addresses, key=self.getKey)
         self._sorted = True
 
+    def len(self):
+        return len(self._addresses)
+
     def resolve(self, addr):
         self.sort_addresses()
         prev = unresolvedAddress
         # TODO: handle addresses smaller than first we have a symbol for and bail out immediately
-
-        # TODO: warn when list is empty to remind of --perf-basic-prof flag
 
         for a in self._addresses:
             if addr < a.decimalAddress: return prev
@@ -102,6 +103,12 @@ def jit_bt (debugger, command, result, internal_dict):
     thread = process.GetSelectedThread()
     frame = thread.GetSelectedFrame()
     frames = thread.get_thread_frames()
+
+    if addresses.len() == 0:
+        print 'WARN: jbt is unable to resolve any JavaScript symbols since it has not collected any symbol information yet.'
+        print '      You may use "bt" instead since jbt couldn\'t add any extra information at this point.'
+        print '      Did you debug Node.js >= v0.11.13 with the --perf-basic-prof flag and "run" the target yet? Example: "lldb -- node_g --perf-basic-prof index.js".'
+        return 
 
     print '* thread: #%d: tid = 0x%x, %s' % (thread.GetIndexID(), thread.GetThreadID(), frame)
     for f in frames:
