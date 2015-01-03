@@ -1,12 +1,18 @@
 # lldb-jbt
 
-![assets/sample.png](assets/sample.png)
+[![assets/sample.png](assets/sample.png)](https://www.youtube.com/watch?v=hy9o5Crjy1A)
+
+[jbt with llbd video](https://www.youtube.com/watch?v=hy9o5Crjy1A)
 
 ## Installation
 
 ```
 npm install -g lldb-jbt
 ```
+
+**Requires Node.js version `0.11.13` or higher** and works best with a *debug* build.
+
+For more information see Node.js [build instructions](https://github.com/thlorenz/lldb-jbt/wiki/Building-Node.js).
 
 ## Usage
 
