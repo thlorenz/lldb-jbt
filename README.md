@@ -1,8 +1,12 @@
 # lldb-jbt
 
-[![assets/sample.png](assets/sample.png)](https://www.youtube.com/watch?v=hy9o5Crjy1A)
+![assets/sample.png](assets/sample.png)
 
-[jbt with llbd video](https://www.youtube.com/watch?v=hy9o5Crjy1A)
+## Screencasts
+
+Debugging Node.js with lldb and jbt                                              |  Debugging Node.js with Xcode and jbt
+:-------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:
+[![assets/yt-jbt-lldb.png](assets/yt-jbt-lldb.png)](http://youtu.be/hy9o5Crjy1A) | [![assets/yt-jbt-lldb.png](assets/yt-jbt-xcode.png)](http://youtu.be/_oMt1vCwod0)
 
 ## Installation
 
