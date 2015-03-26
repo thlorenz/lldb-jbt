@@ -85,7 +85,7 @@ def jit_break (frame, bp_loc, dic):
     length_var = frame.FindVariable('length')
 
     length      = length_var.GetValueAsUnsigned()
-    name        = "%.*s" % (length, name_var.GetSummary().strip('"'))
+    name        = "%.*s" % (int(length), name_var.GetSummary().strip('"'))
     code        = code_var.GetValueAsUnsigned()
     inst_start  = code + kHeaderSize
     
