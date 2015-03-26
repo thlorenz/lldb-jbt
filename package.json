@@ -1,6 +1,6 @@
 {
   "name": "lldb-jbt",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Adds JavaScript symbols to lldb stack traces",
   "main": "index.js",
   "bin": {
