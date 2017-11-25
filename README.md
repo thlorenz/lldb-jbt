@@ -1,5 +1,7 @@
 # lldb-jbt
 
+**NOTE:** Even though this module works as is, **I am no longer improving it because a better solution is available now**. Therefore please use [llnode](https://github.com/nodejs/llnode) instead.
+
 ![assets/sample.png](assets/sample.png)
 
 ## Screencasts
